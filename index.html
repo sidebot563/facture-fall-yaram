@@ -1,0 +1,79 @@
+<html lang="fr">
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Facture - Fall Yaram</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="script.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="facture">
+<div class="container" >
+  
+  <div class="header">
+    <img src="logo.png" class="logo" alt="Logo Fall Yaram" crossorigin="anonymous" />
+    <div>
+      <label>Facture N°:</label>
+      <input type="text" id="numero" value="FYD-001" />
+      <label>Date:</label>
+      <input type="date" id="date" />
+    </div>
+  </div>
+
+  <h3>Informations Client</h3>
+  <input type="text" id="clientNom" placeholder="Nom du client" />
+  <input type="text" id="clientTel" placeholder="Téléphone du client" />
+
+  <h3>Services</h3>
+  <table id="services">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Quantité</th>
+        <th>Prix unitaire</th>
+        <th>Total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" value="Transport Dakar - Thiès" /></td>
+        <td><input type="number" value="1" onchange="calculerTotal()" /></td>
+        <td><input type="number" value="35000" onchange="calculerTotal()" /></td>
+        <td class="total">35000</td>
+        <td><button class="btn" onclick="supprimerLigne(this)">✖</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="btn" onclick="ajouterLigne()">+ Ajouter un service</button>
+
+  <h3>Résumé</h3>
+  <p><strong>Total HT :</strong> <span id="totalHT">35000</span> FCFA</p>
+  <p><strong>Total TTC :</strong> <span id="ttc">41300</span> FCFA</p>
+
+  <label>Mode de paiement :</label>
+  <select>
+    <option>Espèces</option>
+    <option>Orange Money</option>
+    <option>Wave</option>
+    <option>Chèque</option>
+  </select>
+  <strong>Signature :</strong>
+  <div class="signature">
+    <img src="signature.png" alt="Signature client" crossorigin="anonymous" />
+  </div>
+
+  <div class="footer">
+    Merci pour votre confiance.<br>
+    Fall Yaram Déménagement – Grand Dakar
+  </div>
+</div>
+</section>
+<center>
+  <button class="btn" onclick="genererPDF()">📄 Télécharger la facture en PDF</button>
+</center>
+</body>
+</html>
