@@ -1,79 +1,352 @@
-<html lang="fr">
 <!DOCTYPE html>
-
+<html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Facture - Fall Yaram</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="script.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Facture Fall Yaram Express</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .facture {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      border: 2px solid #cc0000;
+      padding: 20px;
+      color: #000;
+      position: relative;
+    }
+    .no-print {
+  display: block;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+    .entete {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #cc0000;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+
+    .entete-text {
+      text-align: center;
+      flex: 1;
+    }
+
+    .entete-text h1 {
+      color: #cc0000;
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .entete-text p {
+      font-size: 14px;
+      margin: 2px 0;
+    }
+
+    .logo {
+      width: 80px;
+      height: auto;
+      margin-right: 10px;
+    }
+
+    .facture-num {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .facture-num span {
+      color: red;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+
+    th, td {
+      border: 1px solid #cc0000;
+      padding: 6px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #e6f0ff;
+    }
+
+    input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .lettres {
+      margin-top: 10px;
+      font-style: italic;
+      font-size: 14px;
+      border-top: 1px dashed #0033cc;
+      padding-top: 5px;
+    }
+
+    .signature {
+      margin-top: 40px;
+      text-align: right;
+    }
+
+    .signature img {
+      width: 180px;
+      height: auto;
+    }
+
+    .btn-container {
+      text-align: center;
+      margin-top: 20px;
+     
+    }
+
+    button {
+      background-color: #af1919;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .facture {
+        padding: 10px;
+      }
+
+      th, td {
+        font-size: 12px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-<section id="facture">
-<div class="container" >
-  
-  <div class="header">
-    <img src="logo.png" class="logo" alt="Logo Fall Yaram" crossorigin="anonymous" />
-    <div>
-      <label>Facture N°:</label>
-      <input type="text" id="numero" value="FYD-001" />
-      <label>Date:</label>
-      <input type="date" id="date" />
+
+<div class="facture" id="facture">
+  <div class="entete">
+    <img src="logo.png" alt="Logo" class="logo" />
+    <div class="entete-text">
+      <h1>FALL YARAM EXPRESS</h1>
+      <p>Service de Déménagement - Livraison ( Auto et Moto )</p>
+      <p>Tél : 78 249 64 57 / 76 027 15 53</p>
+      <p>Email : eljefall@gmail.com</p>
+      <p>Adresse : Taïba Grand-Dakar - Face à la Mosquée El Mansour</p>
     </div>
   </div>
 
-  <h3>Informations Client</h3>
-  <input type="text" id="clientNom" placeholder="Nom du client" />
-  <input type="text" id="clientTel" placeholder="Téléphone du client" />
+  <div class="facture-num">
+    <div>Date : <input type="text" placeholder="JJ/MM/AAAA" /></div>
+    <div id="numero_facture">FACTURE N° :<input type="text" placeholder="000195" /></div>
+  </div>
 
-  <h3>Services</h3>
-  <table id="services">
+  <table id="table-facture">
     <thead>
       <tr>
-        <th>Description</th>
         <th>Quantité</th>
-        <th>Prix unitaire</th>
-        <th>Total</th>
-        <th>Action</th>
+        <th>Désignation</th>
+        <th>P. Unit</th>
+        <th>P. Total</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><input type="text" value="Transport Dakar - Thiès" /></td>
-        <td><input type="number" value="1" onchange="calculerTotal()" /></td>
-        <td><input type="number" value="35000" onchange="calculerTotal()" /></td>
-        <td class="total">35000</td>
-        <td><button class="btn" onclick="supprimerLigne(this)">✖</button></td>
+        <td><input type="number" class="qte" value="1" oninput="recalculer()" /></td>
+        <td><input type="text" value="Déménagement" /></td>
+        <td><input type="number" class="pu" value="20000" oninput="recalculer()" /></td>
+        <td><input type="number" class="ptotal" value="20000" readonly /></td>
+      </tr>
+      <tr>
+        <td><input type="number" class="qte" oninput="recalculer()" /></td>
+        <td><input type="text" /></td>
+        <td><input type="number" class="pu" oninput="recalculer()" /></td>
+        <td><input type="number" class="ptotal" readonly /></td>
       </tr>
     </tbody>
   </table>
-  <button class="btn" onclick="ajouterLigne()">+ Ajouter un service</button>
 
-  <h3>Résumé</h3>
-  <p><strong>Total HT :</strong> <span id="totalHT">35000</span> FCFA</p>
-  <p><strong>Total TTC :</strong> <span id="ttc">41300</span> FCFA</p>
+<div class="btn-container no-print">
+    <button onclick="ajouterLigne()">➕ Ajouter une ligne</button>
 
-  <label>Mode de paiement :</label>
-  <select>
-    <option>Espèces</option>
-    <option>Orange Money</option>
-    <option>Wave</option>
-    <option>Chèque</option>
-  </select>
-  <strong>Signature :</strong>
-  <div class="signature">
-    <img src="signature.png" alt="Signature client" crossorigin="anonymous" />
+</div>
+
+  <div class="total">
+    TOTAL : <span id="total">20000</span> FCFA
   </div>
 
-  <div class="footer">
-    Merci pour votre confiance.<br>
-    Fall Yaram Déménagement – Grand Dakar
+  <div class="lettres" id="lettres">
+    Arrêtée la présente facture à la somme de : <strong>Vingt mille francs CFA</strong>
+  </div>
+
+  <div class="signature">
+    <p>Signature :</p>
+    <img src="signature.png" alt="Signature">
   </div>
 </div>
-</section>
-<center>
-  <button class="btn" onclick="genererPDF()">📄 Télécharger la facture en PDF</button>
-</center>
+
+<div class="btn-container ">
+  <button onclick="genererPDF()">📄 Générer PDF</button>
+  <div class="btn-container no-print">
+  <button onclick="reinitialiserFacture()">🧹 Réinitialiser</button>
+</div>
+</div>
+
+<script>
+
+function genererNumeroFacture() {
+  let numero = localStorage.getItem("numero_facture");
+  if (!numero) {
+    numero = 195;
+  } else {
+    numero = parseInt(numero) + 1;
+
+    genererNumeroFacture();
+    recalculer();
+  }
+  localStorage.setItem("numero_facture", numero);
+
+  const numeroFormate = String(numero).padStart(6, "0");
+  document.getElementById("numero-facture").textContent = numeroFormate;
+}
+
+function ajouterLigne() {
+  const tbody = document.querySelector("#table-facture tbody");
+  const ligne = document.createElement("tr");
+
+  ligne.innerHTML = `
+    <td><input type="number" class="qte" oninput="recalculer()" /></td>
+    <td><input type="text" /></td>
+    <td><input type="number" class="pu" oninput="recalculer()" /></td>
+    <td>
+      <input type="number" class="ptotal" readonly />
+    </td>
+  `;
+
+  tbody.appendChild(ligne);
+}
+
+
+
+  function recalculer() {
+    const qtes = document.querySelectorAll(".qte");
+    const pus = document.querySelectorAll(".pu");
+    const ptotals = document.querySelectorAll(".ptotal");
+    let total = 0;
+
+    for (let i = 0; i < qtes.length; i++) {
+      const qte = parseFloat(qtes[i].value) || 0;
+      const pu = parseFloat(pus[i].value) || 0;
+      const ptotal = qte * pu;
+      ptotals[i].value = ptotal;
+      total += ptotal;
+    }
+
+    document.getElementById("total").textContent = total.toLocaleString();
+    document.getElementById("lettres").innerHTML =
+      "Arrêtée la présente facture à la somme de : <strong>" + convertirNombreEnLettres(total) + " mille francs CFA</strong>";
+  }
+
+  function convertirNombreEnLettres(nombre) {
+    const unite = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
+    const dizaine = ["", "", "vingt", "trente", "quarante", "cinquante", "soixante"];
+    const exceptions = {
+      10: "dix", 11: "onze", 12: "douze", 13: "treize", 14: "quatorze",
+      15: "quinze", 16: "seize", 17: "dix-sept", 18: "dix-huit", 19: "dix-neuf"
+    };
+
+    if (nombre === 0) return "zéro";
+    if (nombre > 999999) return "plus de neuf cent mille";
+
+    let lettres = "";
+    let milliers = Math.floor(nombre / 1000);
+    let centaines = nombre % 1000;
+
+    if (milliers > 0) {
+      lettres += (milliers > 1 ? convertirNombreEnLettres(milliers) : "mille") + " ";
+    }
+
+    if (centaines > 0) {
+      const centaine = Math.floor(centaines / 100);
+      const reste = centaines % 100;
+      if (centaine > 0) lettres += (centaine > 1 ? unite[centaine] : "") + " cent ";
+      if (reste in exceptions) {
+        lettres += exceptions[reste];
+      } else {
+        const diz = Math.floor(reste / 10);
+        const unit = reste % 10;
+        lettres += (dizaine[diz] || "") + (unit > 0 ? "-" + unite[unit] : "");
+      }
+    }
+
+    return lettres.trim();
+  }
+
+ async function genererPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const element = document.getElementById("facture");
+
+  
+  html2canvas(element).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
+    const imgProps = doc.getImageProperties(imgData);
+    const pdfWidth = doc.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    doc.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    doc.save("facture-fall-yaram.pdf");
+  });
+}
+
+  recalculer();
+
+  function reinitialiserFacture() {
+  if (!confirm("Voulez-vous vraiment réinitialiser cette facture ?")) return;
+
+  const tbody = document.querySelector("#table-facture tbody");
+  tbody.innerHTML = "";
+
+  ajouterLigne();
+
+  genererNumeroFacture();
+
+ 
+  recalculer();
+}
+</script>
+
 </body>
 </html>
